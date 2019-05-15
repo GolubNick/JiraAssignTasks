@@ -16,15 +16,11 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 
 public class GoogleSheetsHelper {
-    @Autowired
-    private Environment env;
 
-    private final String pathP12File = env.getProperty("pathP12File");
-    private final String sheetName = env.getProperty("sheetName");
+    private final String pathP12File = GetProperties.getInstance().getProperties("pathP12File");
+    private final String sheetName = GetProperties.getInstance().getProperties("sheetName");
 
     private static String RESPONSIBILITY = "Responsibility";
     private static String RANGE = "A1:B";

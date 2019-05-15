@@ -1,8 +1,5 @@
 package assignTasks.helper;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -12,10 +9,7 @@ import java.sql.Statement;
 
 public class SQLiteJDBCDriverHelper {
 
-    @Autowired
-    private Environment env;
-
-    private final String SQLITE_URL = env.getProperty("SQLITE_URL");
+    private final String SQLITE_URL = GetProperties.getInstance().getProperties("SQLITE_URL");
 
     private Connection connect() {
         String url = SQLITE_URL;

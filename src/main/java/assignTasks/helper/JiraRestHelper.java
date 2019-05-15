@@ -17,15 +17,11 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 
 import static assignTasks.controller.WebController.isSessionExist;
 
 public class JiraRestHelper {
-    @Autowired
-    private Environment env;
-    private final String JIRALINK = env.getProperty("JIRALINK");
+    private final String JIRALINK = GetProperties.getInstance().getProperties("JIRALINK");
 
     public String loginToAccount(String username, String password) {
         String cookie = "";

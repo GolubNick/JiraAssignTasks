@@ -1,13 +1,10 @@
 package assignTasks.model;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import assignTasks.helper.GetProperties;
 
 public class JiraIssue {
-    @Autowired
-    private Environment env;
-    private final String username = env.getProperty("jirauser");
-    private final String password = env.getProperty("jirapass");
+    private final String username = GetProperties.getInstance().getProperties("jirauser");
+    private final String password = GetProperties.getInstance().getProperties("jirapass");
     private String issue;
     private String startNumberIssue;
     private String endNumberIssue;
@@ -17,6 +14,7 @@ public class JiraIssue {
 
 
     public JiraIssue(String issue, String startNumberIssue, String endNumberIssue, String dutyPerson[], String numberReport, String isNewJiraIssue) {
+
         this.issue = issue;
         this.startNumberIssue = startNumberIssue;
         this.endNumberIssue = endNumberIssue;

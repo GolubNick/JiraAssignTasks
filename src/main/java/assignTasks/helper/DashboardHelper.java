@@ -13,14 +13,10 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 
 public class  DashboardHelper {
 
-    @Autowired
-    private Environment env;
-    private final String DASH_LINK = env.getProperty("DASH_LINK");
+    private final String DASH_LINK = GetProperties.getInstance().getProperties("DASH_LINK");
 
     public HashSet<String> getAllIssuesFromReportByCombaineRun(String run){
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
