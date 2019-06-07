@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public class SQLiteJDBCDriverHelper {
 
@@ -97,6 +98,21 @@ public class SQLiteJDBCDriverHelper {
             e.printStackTrace();
         }
         return person;
+    }
+
+    public ArrayList<String> getAllEngineers(){
+        String sql = "SELECT name FROM engineers";
+        ArrayList<String> engineers = new ArrayList<>();
+        try (Connection conn = this.connect();
+             Statement stmt  = conn.createStatement();
+             ResultSet rs    = stmt.executeQuery(sql)){
+            while (rs.next()) {
+                engineers.add(rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return engineers;
     }
 
 

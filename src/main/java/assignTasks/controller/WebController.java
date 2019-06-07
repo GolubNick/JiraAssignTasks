@@ -7,6 +7,7 @@ import assignTasks.helper.SQLiteJDBCDriverHelper;
 import assignTasks.model.JiraIssue;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -27,7 +28,10 @@ public class WebController implements WebMvcConfigurer {
     }
 
     @GetMapping("/")
-    public String showForm(JiraIssue jiraIssue) {
+    public String showForm(Model model, JiraIssue jiraIssue) {
+        SQLiteJDBCDriverHelper sqliteHelper = new SQLiteJDBCDriverHelper();
+        ArrayList<String> listEngineers = sqliteHelper.getAllEngineers();
+        model.addAttribute("engineers", listEngineers.toArray(new String[listEngineers.size()]));
         if (!isSessionExist){
             return "randomAssignForm";
         }
@@ -45,9 +49,7 @@ public class WebController implements WebMvcConfigurer {
         isSessionExist = true;
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Calendar cal = Calendar.getInstance();
-        System.out.println("\n\n");
-        System.out.println("********************************************************************************************");
-        System.out.println(dateFormat.format(cal.getTime()));
+        System.out.println("\n\n********************************************************************************************\n" + dateFormat.format(cal.getTime()));
         System.out.println("ip address is: " + request.getRemoteAddr());
         System.out.println("Login is: " + jiraIssue.getUsername());
         System.out.println("Jira task is: " + jiraIssue.getIssue());
@@ -62,9 +64,7 @@ public class WebController implements WebMvcConfigurer {
         }
         jiraRestHelper.stopWatchingIssue(jiraIssue.getIssue(), jiraIssue.getUsername(), cookie);
         randomAssignJiraTasksToPersonAndAssignJunior(sqliteHelper, jiraRestHelper, cookie, jiraIssue, bindingResult);
-        System.out.println(dateFormat.format(cal.getTime()));
-        System.out.println("--------------------------------------------------------------------------------------------");
-        System.out.println("\n\n");
+        System.out.println(dateFormat.format(cal.getTime()) + "\n--------------------------------------------------------------------------------------------\n\n");
         isSessionExist = false;
         if (jiraIssue.getIsNewJiraIssue().equals("true")) {
             DashboardHelper dashHelper = new DashboardHelper();
