@@ -1,0 +1,46 @@
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/javascript/custom.js}"></script>
+<link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet"/>
+
+<html>
+<br>
+<form action="#" id="myform" th:action="@{/myform}" th:object="${jiraIssue}" method="post">
+    <tr>
+        <td><input id="pointNewTask" style="display:none;" type="text" th:field="*{isNewJiraIssue}"/></td>
+    </tr>
+    <table>
+        <thead>
+        <tr>
+            <td>Parent Task:</td>
+            <td>Report ID:</td>
+        </tr>
+        <tr>
+            <td title="Format parent task should be CDR-XXXXX"><input id="inputIssue" type="text" th:field="*{issue}">
+            </td>
+            <td title="Report ID you can take in the report link"><input id="inputNumberReport" type="text" th:field="*{numberReport}"></td>
+
+        <tr>
+            <td class="customClass">Engineer</td>
+            <td class="customClass">Report member</td>
+        </tr>
+        </thead>
+        <tbody th:each="engineer : ${engineers}">
+        <tr>
+            <td th:text="${engineer}"></td>
+            <td><input th:id="'person' + ${engineer}" type="checkbox" th:field="*{dutyPerson}" th:value="${engineer}"/></td>
+        </tr>
+        </tbody>
+        <tr>
+            <td class="customClass">Reopen old issues</td>
+            <td class="customClass"><input type="checkbox" checked id="reopenTasksToggleButton"></td>
+        </tr>
+    </table>
+</form>
+<p><button class="buttonStyleOne" id="buttonId" onClick="submitForm('true')">Assign all tasks</button></p>
+<p><button class="buttonStyleOne" id="buttonAssignNewTask" onClick="submitForm('false')">Assign new tasks</button></p>
+<p><button class="buttonStyleOne" id="buttonSelectAll" onClick="checkAllCheckboxes()">Select All</button></p>
+<tr>
+    <div id="spinner" style="display:none;" class="loader"></div>
+</tr>
+</body>
+</html>
