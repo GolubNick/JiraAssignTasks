@@ -24,16 +24,16 @@
             <td class="customClass">Report member</td>
         </tr>
         </thead>
-        <tbody th:each="engineer : ${engineers}">
-        <tr>
+        <tbody>
+        <tr th:each="engineer : ${engineers}">
             <td th:text="${engineer}"></td>
             <td><input th:id="'person' + ${engineer}" type="checkbox" th:field="*{dutyPerson}" th:value="${engineer}"/></td>
         </tr>
-        </tbody>
         <tr>
             <td class="customClass">Reopen old issues</td>
             <td class="customClass"><input type="checkbox" checked id="reopenTasksToggleButton"></td>
         </tr>
+        </tbody>
     </table>
 </form>
 <p><button class="buttonStyleOne" id="buttonId" onClick="submitForm('true')">Assign all tasks</button></p>
