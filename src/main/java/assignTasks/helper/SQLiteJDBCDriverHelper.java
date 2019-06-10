@@ -62,7 +62,7 @@ public class SQLiteJDBCDriverHelper {
              Statement stmt  = conn.createStatement();
              ResultSet rs    = stmt.executeQuery(sql)){
             while (rs.next()) {
-                person = rs.getString("person");
+                person = rs.getString("full_name");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -92,7 +92,7 @@ public class SQLiteJDBCDriverHelper {
              Statement stmt  = conn.createStatement();
              ResultSet rs    = stmt.executeQuery(sql)){
             while (rs.next()) {
-                person = rs.getString("person");
+                person = rs.getString("full_name");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -115,5 +115,29 @@ public class SQLiteJDBCDriverHelper {
         return engineers;
     }
 
+    public  void addNewEngineer(String name, String fullName, String position) {
+        String sql = "INSERT INTO engineers (name,full_name,position) VALUES (?,?,?)";
 
+        try (Connection conn = this.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, name);
+            pstmt.setString(2, fullName);
+            pstmt.setString(3, position);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public  void removeEngineerByFullName(String fullName) {
+        String sql = "DELETE FROM engineers WHERE full_name = ?";
+
+        try (Connection conn = this.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, fullName);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

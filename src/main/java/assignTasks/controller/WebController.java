@@ -40,6 +40,22 @@ public class WebController implements WebMvcConfigurer {
         }
     }
 
+    @GetMapping("/addEngineer")
+    @ResponseBody
+    public String addEngineerPanel(@RequestParam(name="") String fullName, @RequestParam(name="") String name, @RequestParam(name="") String position) {
+        SQLiteJDBCDriverHelper sqliteHelper = new SQLiteJDBCDriverHelper();
+        sqliteHelper.addNewEngineer(name, fullName, position);
+        return fullName + " has been added!";
+    }
+
+    @GetMapping("/removeEngineer")
+    @ResponseBody
+    public String removeEngineerPanel(@RequestParam(name="") String fullName) {
+        SQLiteJDBCDriverHelper sqliteHelper = new SQLiteJDBCDriverHelper();
+        sqliteHelper.removeEngineerByFullName(fullName);
+        return fullName + " has been deleted!";
+    }
+
 
     @RequestMapping(value="/myform", method= RequestMethod.POST)
     public String assignJiraTasksToPerson(JiraIssue jiraIssue, BindingResult bindingResult, HttpServletRequest request) {
@@ -121,7 +137,8 @@ public class WebController implements WebMvcConfigurer {
     private void randomAssignTasks(SQLiteJDBCDriverHelper sqliteHelper, JiraRestHelper jiraRestHelper, JiraIssue jiraIssue, List<String> listJiraSubTasks, String cookie){
         int index = 0;
         String[] duties = jiraIssue.getDutyPerson();
-        System.out.println("Duties are: " + duties.toString());
+        System.out.println("Duties are: ");
+        Arrays.stream(duties).forEach(System.out::println);
         Collections.shuffle(Arrays.asList(duties));
         for (String jiraSubTask : listJiraSubTasks) {
             int point = 0;
