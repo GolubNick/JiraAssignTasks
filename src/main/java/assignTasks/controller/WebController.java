@@ -4,6 +4,7 @@ import assignTasks.helper.AccountHelper;
 import assignTasks.helper.DashboardHelper;
 import assignTasks.helper.JiraRestHelper;
 import assignTasks.helper.SQLiteJDBCDriverHelper;
+import assignTasks.helper.GetProperties;
 import assignTasks.model.JiraIssue;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
@@ -31,7 +32,9 @@ public class WebController implements WebMvcConfigurer {
     public String showForm(Model model, JiraIssue jiraIssue) {
         SQLiteJDBCDriverHelper sqliteHelper = new SQLiteJDBCDriverHelper();
         ArrayList<String> listEngineers = sqliteHelper.getAllEngineers();
+        String positionSpecialUser = sqliteHelper.getEngineerPosition(GetProperties.getInstance().getProperties("specialUser"));
         model.addAttribute("engineers", listEngineers.toArray(new String[listEngineers.size()]));
+        model.addAttribute("positionSpecialUser", positionSpecialUser);
         if (!isSessionExist){
             return "randomAssignForm";
         }
@@ -54,6 +57,14 @@ public class WebController implements WebMvcConfigurer {
         SQLiteJDBCDriverHelper sqliteHelper = new SQLiteJDBCDriverHelper();
         sqliteHelper.removeEngineerByFullName(fullName);
         return fullName + " has been deleted!";
+    }
+
+    @GetMapping("/changePosition")
+    @ResponseBody
+    public String changePosition(@RequestParam(name="") String fullName, @RequestParam(name="") String position) {
+        SQLiteJDBCDriverHelper sqliteHelper = new SQLiteJDBCDriverHelper();
+        sqliteHelper.changeEngineerPositionByFullName(fullName, position);
+        return fullName + " has been updated!";
     }
 
 

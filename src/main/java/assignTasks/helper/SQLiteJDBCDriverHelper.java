@@ -100,6 +100,21 @@ public class SQLiteJDBCDriverHelper {
         return person;
     }
 
+    public String getEngineerPosition(String fullName){
+        String sql = "SELECT position FROM engineers where full_name = '" + fullName + "'";
+        String position = "";
+        try (Connection conn = this.connect();
+             Statement stmt  = conn.createStatement();
+             ResultSet rs    = stmt.executeQuery(sql)){
+            while (rs.next()) {
+                position = rs.getString("position");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return position;
+    }
+
     public ArrayList<String> getAllEngineers(){
         String sql = "SELECT name FROM engineers";
         ArrayList<String> engineers = new ArrayList<>();
@@ -135,6 +150,19 @@ public class SQLiteJDBCDriverHelper {
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, fullName);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public  void changeEngineerPositionByFullName(String fullName, String position) {
+        String sql = "UPDATE engineers set position = ? WHERE full_name = ?";
+
+        try (Connection conn = this.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, position);
+            pstmt.setString(2, fullName);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
