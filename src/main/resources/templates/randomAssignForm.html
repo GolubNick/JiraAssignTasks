@@ -38,9 +38,8 @@
 </form>
 <p><button class="buttonStyleOne" id="buttonId" onClick="submitForm('true')">Assign all tasks</button></p>
 <p><button class="buttonStyleOne" id="buttonAssignNewTask" onClick="submitForm('false')">Assign new tasks</button></p>
-<p><button class="buttonStyleOne" id="buttonSelectAll" th:onClick="'checkAllCheckboxes(\'' + ${positionSpecialUser} + '\')'">Select All</button></p>
+<p><button class="buttonStyleOne" id="buttonSelectAll" 	th:attr="onclick=|checkAllCheckboxes(`${#strings.listDefaultString(engineers,default)}`)|">Select All</button></p>
 <tr>
     <div id="spinner" style="display:none;" class="loader"></div>
 </tr>
-</body>
 </html>
