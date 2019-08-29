@@ -119,30 +119,7 @@ public class WebController implements WebMvcConfigurer {
             listJiraSubTasks = listFreeJiraSubTasks;
 
         }
-        List<String> listJSJiraSubTasksUnassigned =  (ArrayList<String>) listJiraSubTasks.clone();
-        ArrayList<String> juniors = new ArrayList<>();
-        for (String junior : jiraIssue.getDutyPerson()){
-            if (AccountHelper.getInstance().isJuniorKey(junior)){
-                juniors.add(AccountHelper.getInstance().getJuniorFullName(junior));
-            }
-        }
-        for (String jiraSubTask : listJiraSubTasks){
-            String[] casesIds = jiraRestHelper.getTaskInfo(cookie, jiraSubTask);
-            if (casesIds.length == 1){
-                String author = jiraRestHelper.getIssueAuthorBySummary(cookie, casesIds[0]);
-                System.out.println("*** case id is " + casesIds[0] + " author is " + author);
-                if (AccountHelper.getInstance().isJuniorName(author) && !juniors.contains(author)){
-                    System.out.println("*** " + author + " is AQA junior");
-                    String summary = jiraRestHelper.getIssueSummaryById(jiraSubTask, cookie);
-                    jiraRestHelper.assigneTaskToName(jiraSubTask, author, cookie);
-                    sqliteHelper.insert(author, casesIds[0], jiraSubTask, jiraIssue.getIssue(), summary);
-                    jiraRestHelper.stopWatchingIssue(jiraSubTask, jiraIssue.getUsername(), cookie);
-                    listJSJiraSubTasksUnassigned.remove(jiraSubTask);
-                }
-            }
-        }
-
-        randomAssignTasks(sqliteHelper, jiraRestHelper, jiraIssue, listJSJiraSubTasksUnassigned, cookie);
+        randomAssignTasks(sqliteHelper, jiraRestHelper, jiraIssue, listJiraSubTasks, cookie);
     }
 
     private void randomAssignTasks(SQLiteJDBCDriverHelper sqliteHelper, JiraRestHelper jiraRestHelper, JiraIssue jiraIssue, List<String> listJiraSubTasks, String cookie){
