@@ -115,6 +115,21 @@ public class SQLiteJDBCDriverHelper {
         return position;
     }
 
+    public String getFullNameByPCName(String pcname){
+        String sql = "SELECT full_name FROM engineers where pcname = '" + pcname + "'";
+        String full_name = "";
+        try (Connection conn = this.connect();
+             Statement stmt  = conn.createStatement();
+             ResultSet rs    = stmt.executeQuery(sql)){
+            while (rs.next()) {
+                full_name = rs.getString("full_name");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return full_name;
+    }
+
     public ArrayList<String> getAllEngineers(){
         String sql = "SELECT name FROM engineers";
         ArrayList<String> engineers = new ArrayList<>();
@@ -130,14 +145,16 @@ public class SQLiteJDBCDriverHelper {
         return engineers;
     }
 
-    public  void addNewEngineer(String name, String fullName, String position) {
-        String sql = "INSERT INTO engineers (name,full_name,position) VALUES (?,?,?)";
+    public  void addNewEngineer(String name, String fullName, String position, String birthday, String pcname) {
+        String sql = "INSERT INTO engineers (name,full_name,position,birthday,pcname) VALUES (?,?,?,?,?)";
 
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, name);
             pstmt.setString(2, fullName);
             pstmt.setString(3, position);
+            pstmt.setString(4, birthday);
+            pstmt.setString(5, pcname);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

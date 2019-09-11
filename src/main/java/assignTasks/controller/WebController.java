@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import rx.schedulers.Schedulers;
+import java.net.InetAddress;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -35,25 +36,25 @@ public class WebController implements WebMvcConfigurer {
         String positionSpecialUser = sqliteHelper.getEngineerPosition(GetProperties.getInstance().getProperties("specialUser"));
         model.addAttribute("engineers", listEngineers.toArray(new String[listEngineers.size()]));
         model.addAttribute("positionSpecialUser", positionSpecialUser);
-        if (!isSessionExist){
+        if (!isSessionExist) {
             return "randomAssignForm";
-        }
-        else {
+        } else {
             return "busy";
         }
     }
 
     @GetMapping("/addEngineer")
     @ResponseBody
-    public String addEngineerPanel(@RequestParam(name="") String fullName, @RequestParam(name="") String name, @RequestParam(name="") String position) {
+    public String addEngineerPanel(@RequestParam(name = "") String fullName, @RequestParam(name = "") String name,
+                                   @RequestParam(name = "") String position, @RequestParam(name = "") String birthday, @RequestParam(name = "") String pcname) {
         SQLiteJDBCDriverHelper sqliteHelper = new SQLiteJDBCDriverHelper();
-        sqliteHelper.addNewEngineer(name, fullName, position);
+        sqliteHelper.addNewEngineer(name, fullName, position, birthday, pcname);
         return fullName + " has been added!";
     }
 
     @GetMapping("/removeEngineer")
     @ResponseBody
-    public String removeEngineerPanel(@RequestParam(name="") String fullName) {
+    public String removeEngineerPanel(@RequestParam(name = "") String fullName) {
         SQLiteJDBCDriverHelper sqliteHelper = new SQLiteJDBCDriverHelper();
         sqliteHelper.removeEngineerByFullName(fullName);
         return fullName + " has been deleted!";
@@ -61,23 +62,25 @@ public class WebController implements WebMvcConfigurer {
 
     @GetMapping("/changePosition")
     @ResponseBody
-    public String changePosition(@RequestParam(name="") String fullName, @RequestParam(name="") String position) {
+    public String changePosition(@RequestParam(name = "") String fullName, @RequestParam(name = "") String position) {
         SQLiteJDBCDriverHelper sqliteHelper = new SQLiteJDBCDriverHelper();
         sqliteHelper.changeEngineerPositionByFullName(fullName, position);
         return fullName + " has been updated!";
     }
 
 
-    @RequestMapping(value="/myform", method= RequestMethod.POST)
-    public String assignJiraTasksToPerson(JiraIssue jiraIssue, BindingResult bindingResult, HttpServletRequest request) {
-        if (isSessionExist){
+    @RequestMapping(value = "/myform", method = RequestMethod.POST)
+    public String assignJiraTasksToPerson(JiraIssue jiraIssue, BindingResult bindingResult, HttpServletRequest request) throws Exception {
+        if (isSessionExist) {
             return "busy";
         }
         isSessionExist = true;
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        String PCName = InetAddress.getByName(request.getRemoteAddr()).getHostName().split(".in")[0];
         Calendar cal = Calendar.getInstance();
         System.out.println("\n\n********************************************************************************************\n" + dateFormat.format(cal.getTime()));
         System.out.println("ip address is: " + request.getRemoteAddr());
+        System.out.println("pcname is: " + PCName);
         System.out.println("Login is: " + jiraIssue.getUsername());
         System.out.println("Jira task is: " + jiraIssue.getIssue());
         System.out.println("Dashboard report is: " + jiraIssue.getNumberReport());
@@ -85,11 +88,13 @@ public class WebController implements WebMvcConfigurer {
         SQLiteJDBCDriverHelper sqliteHelper = new SQLiteJDBCDriverHelper();
         String cookie = jiraRestHelper.loginToAccount(jiraIssue.getUsername(), jiraIssue.getPassword());
         System.out.println("Cookie is " + cookie);
-        if (cookie.equals("Login failed")){
+        if (cookie.equals("Login failed")) {
             isSessionExist = false;
             return "loginFailed";
         }
-        jiraRestHelper.stopWatchingIssue(jiraIssue.getIssue(), jiraIssue.getUsername(), cookie);
+        jiraIssue.setEngineer(sqliteHelper.getFullNameByPCName(PCName));
+        System.out.println("Engineer is " + jiraIssue.getEngineer());
+        jiraRestHelper.stopWatchingIssue(jiraIssue.getIssue(), jiraIssue.getEngineer(), cookie);
         randomAssignJiraTasksToPersonAndAssignJunior(sqliteHelper, jiraRestHelper, cookie, jiraIssue, bindingResult);
         System.out.println(dateFormat.format(cal.getTime()) + "\n--------------------------------------------------------------------------------------------\n\n");
         isSessionExist = false;
@@ -122,7 +127,7 @@ public class WebController implements WebMvcConfigurer {
         randomAssignTasks(sqliteHelper, jiraRestHelper, jiraIssue, listJiraSubTasks, cookie);
     }
 
-    private void randomAssignTasks(SQLiteJDBCDriverHelper sqliteHelper, JiraRestHelper jiraRestHelper, JiraIssue jiraIssue, List<String> listJiraSubTasks, String cookie){
+    private void randomAssignTasks(SQLiteJDBCDriverHelper sqliteHelper, JiraRestHelper jiraRestHelper, JiraIssue jiraIssue, List<String> listJiraSubTasks, String cookie) {
         int index = 0;
         String[] duties = jiraIssue.getDutyPerson();
         System.out.println("Duties are: ");
@@ -149,7 +154,7 @@ public class WebController implements WebMvcConfigurer {
                 System.out.println("\n******************************\n" + comment + " - " + jiraSubTask + "\n******************************\n");
                 jiraRestHelper.addComment(jiraSubTask, comment, cookie);
             }
-            jiraRestHelper.stopWatchingIssue(jiraSubTask, jiraIssue.getUsername(), cookie);
+            jiraRestHelper.stopWatchingIssue(jiraSubTask, jiraIssue.getEngineer(), cookie);
             index = index < duties.length - 1 ? ++index : 0;
         }
     }

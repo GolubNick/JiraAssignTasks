@@ -1,20 +1,38 @@
 package assignTasks.model;
 
 import assignTasks.helper.GetProperties;
+import lombok.Getter;
+import lombok.Setter;
 
 public class JiraIssue {
+    @Getter
     private final String username = GetProperties.getInstance().getProperties("jirauser");
+    @Getter
     private final String password = GetProperties.getInstance().getProperties("jirapass");
+    @Getter
+    @Setter
     private String issue;
+    @Getter
+    @Setter
     private String startNumberIssue;
+    @Getter
+    @Setter
     private String endNumberIssue;
+    @Getter
+    @Setter
     private String[] dutyPerson;
+    @Getter
+    @Setter
+    private String engineer;
+    @Getter
+    @Setter
     private String numberReport;
+    @Getter
+    @Setter
     private String isNewJiraIssue;
 
 
     public JiraIssue(String issue, String startNumberIssue, String endNumberIssue, String dutyPerson[], String numberReport, String isNewJiraIssue) {
-
         this.issue = issue;
         this.startNumberIssue = startNumberIssue;
         this.endNumberIssue = endNumberIssue;
@@ -22,61 +40,4 @@ public class JiraIssue {
         this.numberReport = numberReport;
         this.isNewJiraIssue = isNewJiraIssue;
     }
-
-    public String getStartNumberIssue() {
-        return startNumberIssue;
-    }
-
-    public void setStartNumberIssue(String startNumberIssue) {
-        this.startNumberIssue = startNumberIssue;
-    }
-
-    public String getEndNumberIssue() {
-        return endNumberIssue;
-    }
-
-    public void setEndNumberIssue(String endNumberIssue) {
-        this.endNumberIssue = endNumberIssue;
-    }
-
-    public String[] getDutyPerson() {
-        return dutyPerson;
-    }
-
-    public void setDutyPerson(String[] dutyPerson) {
-        this.dutyPerson = dutyPerson;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getIssue() {
-        return issue;
-    }
-
-    public void setIssue(String issue) {
-        this.issue = issue;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getNumberReport() {
-        return numberReport;
-    }
-
-    public void setNumberReport(String numberReport) {
-        this.numberReport = numberReport;
-    }
-
-    public String getIsNewJiraIssue() {
-        return isNewJiraIssue;
-    }
-
-    public void setIsNewJiraIssue(String isNewJiraIssue) {
-        this.isNewJiraIssue = isNewJiraIssue;
-    }
-
 }
