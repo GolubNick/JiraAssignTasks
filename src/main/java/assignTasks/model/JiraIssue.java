@@ -30,14 +30,27 @@ public class JiraIssue {
     @Getter
     @Setter
     private String isNewJiraIssue;
+    @Getter
+    @Setter
+    private String isCodeReviewJiraIssue;
+    @Getter
+    @Setter
+    private String isUpdateJiraIssue;
+    @Getter
+    @Setter
+    private String isAllJiraIssue;
 
 
-    public JiraIssue(String issue, String startNumberIssue, String endNumberIssue, String dutyPerson[], String numberReport, String isNewJiraIssue) {
+
+    public JiraIssue(String issue, String startNumberIssue, String endNumberIssue, String dutyPerson[], String numberReport, String isNewJiraIssue, String isCodeReviewJiraIssue, String isUpdateJiraIssue, String isAllJiraIssue) {
         this.issue = issue;
         this.startNumberIssue = startNumberIssue;
         this.endNumberIssue = endNumberIssue;
         this.dutyPerson = dutyPerson;
         this.numberReport = numberReport;
         this.isNewJiraIssue = isNewJiraIssue;
+        this.isCodeReviewJiraIssue = isCodeReviewJiraIssue;
+        this.isUpdateJiraIssue = isUpdateJiraIssue;
+        this.isAllJiraIssue = isAllJiraIssue;
     }
 }

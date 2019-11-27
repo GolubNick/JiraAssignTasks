@@ -7,21 +7,23 @@
 <form action="#" id="myform" th:action="@{/myform}" th:object="${jiraIssue}" method="post">
     <tr>
         <td><input id="pointNewTask" style="display:none;" type="text" th:field="*{isNewJiraIssue}"/></td>
+        <td><input id="pointCodeReviewTasks" style="display:none;" type="text" th:field="*{isCodeReviewJiraIssue}"/></td>
+        <td><input id="pointUpdateTasks" style="display:none;" type="text" th:field="*{isUpdateJiraIssue}"/></td>
+        <td><input id="pointAllTasks" style="display:none;" type="text" th:field="*{isAllJiraIssue}"/></td>
     </tr>
-    <table>
+    <table class="table1">
         <thead>
         <tr>
             <td>Parent Task:</td>
             <td>Report ID:</td>
         </tr>
         <tr>
-            <td title="Format parent task should be CDR-XXXXX"><input id="inputIssue" type="text" th:field="*{issue}">
-            </td>
+            <td title="Format parent task should be CDR-XXXXX"><input id="inputIssue" type="text" th:field="*{issue}"></td>
             <td title="Report ID you can take in the report link"><input id="inputNumberReport" type="text" th:field="*{numberReport}"></td>
-
+        </tr>
         <tr>
-            <td class="customClass">Engineer</td>
-            <td class="customClass">Report member</td>
+            <td class="customClass">Engineers</td>
+            <td class="customClass"><input id="buttonSelectAll" type="checkbox"	th:attr="onclick=|checkAllCheckboxes(`${#strings.listDefaultString(engineers,default)}`)|"/></td>
         </tr>
         </thead>
         <tbody>
@@ -36,9 +38,13 @@
         </tbody>
     </table>
 </form>
-<p><button class="buttonStyleOne" id="buttonId" onClick="submitForm('true')">Assign all tasks</button></p>
-<p><button class="buttonStyleOne" id="buttonAssignNewTask" onClick="submitForm('false')">Assign new tasks</button></p>
-<p><button class="buttonStyleOne" id="buttonSelectAll" 	th:attr="onclick=|checkAllCheckboxes(`${#strings.listDefaultString(engineers,default)}`)|">Select All</button></p>
+<table class="table2">
+<td><button class="buttonStyleOne" id="buttonId" onClick="submitForm('true')">Assign CDR tasks</button></td>
+<td><button class="buttonStyleOne" id="buttonAssignNewTask" onClick="submitForm('false')">Assign New CDR tasks</button></td>
+<td><button class="buttonStyleOne" id="buttonAssignCodeReviewTasks" onClick="tasksUpdateOrReview('review')">Assign Code Review tasks</button></td>
+<td><button class="buttonStyleOne" id="buttonAssignUpdateTasks" onClick="tasksUpdateOrReview('update')">Assign Update tasks</button></td>
+<td><button class="buttonStyleOne" id="buttonAssignALlTasks" onClick="assignAll()">Assign All</button></td>
+</table>
 <tr>
     <div id="spinner" style="display:none;" class="loader"></div>
 </tr>

@@ -1,4 +1,4 @@
-table {
+table.table1 {
   font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
   font-size: 14px;
   max-width: 90%;
@@ -8,7 +8,7 @@ table {
   border-top: 4px solid #9baff1;
   border-bottom: 4px solid #9baff1;
 }
-tr {
+table.table1 tr {
   font-size: 13px;
   font-weight: normal;
   background: #e8edff;
@@ -17,12 +17,18 @@ tr {
   color: #039;
   padding: 8px;
 }
-td {
+table.table1 td {
   background: #e8edff;
   border-right: 1px solid #aabcfe;
   border-left: 1px solid #aabcfe;
   color: #669;
   padding: 8px;
+}
+
+table.table2 {
+  max-width: 90%;
+  width: 80%;
+  text-align: center;
 }
 
 .customClass {

@@ -23,6 +23,9 @@ import java.util.*;
 public class WebController implements WebMvcConfigurer {
 
     public static boolean isSessionExist = false;
+    private String REVIEW = "review";
+    private String UPDATE = "update";
+    private String ALL = "all";
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
@@ -94,6 +97,30 @@ public class WebController implements WebMvcConfigurer {
         }
         jiraIssue.setEngineer(sqliteHelper.getFullNameByPCName(PCName));
         System.out.println("Engineer is " + jiraIssue.getEngineer());
+
+        if (!jiraIssue.getIsNewJiraIssue().isEmpty()) {
+            assignAllCDRTasks(jiraRestHelper, jiraIssue, sqliteHelper, cookie, bindingResult, dateFormat, cal);
+        }
+        else if (jiraIssue.getIsCodeReviewJiraIssue().equals(REVIEW)){
+            randomAssigneCodeReviewOrUpdateTasks(jiraIssue, jiraRestHelper, cookie, REVIEW);
+
+        }
+        else if (jiraIssue.getIsUpdateJiraIssue().equals(UPDATE)){
+            randomAssigneCodeReviewOrUpdateTasks(jiraIssue, jiraRestHelper, cookie, UPDATE);
+
+        }
+        else if (jiraIssue.getIsAllJiraIssue().equals(ALL)){
+            jiraIssue.setIsNewJiraIssue("true");
+            new Thread(() -> randomAssigneCodeReviewOrUpdateTasks(jiraIssue, jiraRestHelper, cookie, REVIEW)).start();
+            new Thread(() -> randomAssigneCodeReviewOrUpdateTasks(jiraIssue, jiraRestHelper, cookie, UPDATE)).start();
+            new Thread(() -> assignAllCDRTasks(jiraRestHelper, jiraIssue, sqliteHelper, cookie, bindingResult, dateFormat, cal)).start();
+        }
+
+        System.out.println("isSessionExist " + isSessionExist);
+        return "redirect:/results";
+    }
+
+    private void assignAllCDRTasks(JiraRestHelper jiraRestHelper, JiraIssue jiraIssue, SQLiteJDBCDriverHelper sqliteHelper, String cookie, BindingResult bindingResult, DateFormat dateFormat, Calendar cal){
         jiraRestHelper.stopWatchingIssue(jiraIssue.getIssue(), jiraIssue.getEngineer(), cookie);
         randomAssignJiraTasksToPersonAndAssignJunior(sqliteHelper, jiraRestHelper, cookie, jiraIssue, bindingResult);
         System.out.println(dateFormat.format(cal.getTime()) + "\n--------------------------------------------------------------------------------------------\n\n");
@@ -109,8 +136,6 @@ public class WebController implements WebMvcConfigurer {
                     () -> System.out.println("Old tasks were reopened")
             );
         }
-        System.out.println("isSessionExist " + isSessionExist);
-        return "redirect:/results";
     }
 
     private void randomAssignJiraTasksToPersonAndAssignJunior(SQLiteJDBCDriverHelper sqliteHelper, JiraRestHelper jiraRestHelper, String cookie, JiraIssue jiraIssue, BindingResult bindingResult) {
@@ -157,5 +182,29 @@ public class WebController implements WebMvcConfigurer {
             jiraRestHelper.stopWatchingIssue(jiraSubTask, jiraIssue.getEngineer(), cookie);
             index = index < duties.length - 1 ? ++index : 0;
         }
+    }
+
+    private void randomAssigneCodeReviewOrUpdateTasks(JiraIssue jiraIssue, JiraRestHelper jiraRestHelper, String cookie, String tasksType){
+        int index = 0;
+        ArrayList<String> allTasks = null;
+        if (tasksType.equals(REVIEW)){
+            allTasks = jiraRestHelper.getAllFreeTasksWaitingForCodeReview(cookie);
+        }
+        else if (tasksType.equals(UPDATE)){
+            allTasks = jiraRestHelper.getAllFreeTasksWaitingForUpdate(cookie);
+        }
+        String[] duties = jiraIssue.getDutyPerson();
+        Collections.shuffle(Arrays.asList(duties));
+        try {
+            for (String task : allTasks) {
+                jiraRestHelper.assigneTaskToName(task, AccountHelper.getInstance().getFullName(duties[index]), cookie);
+                System.out.println(task + " " + AccountHelper.getInstance().getFullName(duties[index]));
+                index = index < duties.length - 1 ? ++index : 0;
+            }
+        }
+        catch (NullPointerException e){
+            System.out.println("Tasks are not collected!");
+        }
+        isSessionExist = false;
     }
 }

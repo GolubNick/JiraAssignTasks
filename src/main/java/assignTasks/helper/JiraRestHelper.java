@@ -22,6 +22,7 @@ import static assignTasks.controller.WebController.isSessionExist;
 
 public class JiraRestHelper {
     private final String JIRALINK = GetProperties.getInstance().getProperties("JIRALINK");
+    private final String misterX = GetProperties.getInstance().getProperties("misterX");
 
     public String loginToAccount(String username, String password) {
         String cookie = "";
@@ -271,6 +272,61 @@ public class JiraRestHelper {
             e.printStackTrace();
         }
 
+    }
+
+    public ArrayList<String> getAllFreeTasksWaitingForCodeReview(String JSESSIONID) {
+        ArrayList<String> tasksIds = new ArrayList<>();
+        HttpResponse response;
+        StringBuffer result;
+        HttpClient client = HttpClientBuilder.create().build();
+        HttpGet httpGet = new HttpGet((JIRALINK + "/rest/api/2/search?jql=Project='QA Automation - Odessa' AND assignee=" + misterX + " AND type='JS Web Sub Task' AND status='Waiting for Code Review'").replace(" ", "%20"));
+        httpGet.addHeader("Cookie", "JSESSIONID=" + JSESSIONID);
+        try {
+            response = client.execute(httpGet);
+            BufferedReader rd = new BufferedReader(
+                    new InputStreamReader(response.getEntity().getContent()));
+            result = new StringBuffer();
+            String line = "";
+            while ((line = rd.readLine()) != null) {
+                result.append(line);
+            }
+            JSONArray allTasks = new JSONObject(result.toString()).getJSONArray("issues");
+            allTasks.forEach(item -> {
+                JSONObject obj = (JSONObject) item;
+                tasksIds.add((obj.get("key")).toString());
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return tasksIds;
+    }
+
+
+    public ArrayList<String> getAllFreeTasksWaitingForUpdate(String JSESSIONID) {
+        ArrayList<String> tasksIds = new ArrayList<>();
+        HttpResponse response;
+        StringBuffer result;
+        HttpClient client = HttpClientBuilder.create().build();
+        HttpGet httpGet = new HttpGet((JIRALINK + "/rest/api/2/search?jql=Project='QA Automation - Odessa' AND assignee=" + misterX + " AND type='JS Update Sub Task' AND status='Open'&maxResults=1000").replace(" ", "%20"));
+        httpGet.addHeader("Cookie", "JSESSIONID=" + JSESSIONID);
+        try {
+            response = client.execute(httpGet);
+            BufferedReader rd = new BufferedReader(
+                    new InputStreamReader(response.getEntity().getContent()));
+            result = new StringBuffer();
+            String line = "";
+            while ((line = rd.readLine()) != null) {
+                result.append(line);
+            }
+            JSONArray allTasks = new JSONObject(result.toString()).getJSONArray("issues");
+            allTasks.forEach(item -> {
+                JSONObject obj = (JSONObject) item;
+                tasksIds.add((obj.get("key")).toString());
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return tasksIds;
     }
 
 
